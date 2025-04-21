@@ -13,8 +13,8 @@ const Post = () => {
 
   // Comentarios iniciales
   const initialComments = [
-    { id: 1, text: "Me gustan los paisajes" },
-    { id: 2, text: "El campo es lo mejor" }
+    { id: 1, text: "Me gustan los paisajes",likes:0,replies:[] },
+    { id: 2, text: "El campo es lo mejor",likes:0,replies:[] }
   ];
 
   // Comentarios
@@ -23,12 +23,33 @@ const Post = () => {
   // Agregar nuevo comentario
   const handleAddComment = (text) => {
     const newComment = {
-      id: comments.length + 1,
+      id: Date.now(),
       text,
+      likes: 0,
+      replies: [],
     };
     setComments([...comments, newComment]);
   };
 
+const handleReply = (commentId, replyText) => {
+  const updated = comments.map((comment) =>
+    comment.id === commentId
+      ? {
+          ...comment,
+          replies: [...comment.replies, { id: Date.now(), text: replyText }],
+        }
+      : comment
+  );
+  setComments(updated);
+};
+const handleLike = (commentId) => {
+  const updated = comments.map((comment) =>
+    comment.id === commentId
+      ? { ...comment, likes: comment.likes + 1 }
+      : comment
+  );
+  setComments(updated);
+};
   return (
     <div>
       <div className="container my-3">
@@ -96,7 +117,9 @@ const Post = () => {
             {btnComment && (
               <>
                 <CommentForm onAddComment={handleAddComment} />
-                <ListComments comments={comments} />
+                <ListComments comments={comments}
+                onReply={handleReply}
+                onLike={handleLike} />
               </>
             )}
           </div>
